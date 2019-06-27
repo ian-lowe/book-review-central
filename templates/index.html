@@ -5,5 +5,11 @@
 {% endblock %}
 
 {% block body %}
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae nam iusto maiores doloribus commodi aut nihil, doloremque vel unde perspiciatis suscipit, reiciendis quisquam id, dolor neque reprehenderit laborum non! Recusandae!</p>
+    {% for book in books %}
+    <div style="width:300px;border:1px solid black;">
+        <p>Title: {{ book.title}}</p>
+        <p>Author: {{ book.author }}</p>
+        <p>Year: {{ book.year }}</p>
+    </div>  
+    {% endfor %}
 {% endblock %}

@@ -6,7 +6,14 @@
 
 {% block body %}
     <div>
-        <input type="text" placeholder="Username">
-        <input type="password" placeholder="Password">
+        <form action="{{ url_for('next') }}" method="POST">
+            <div class="form-group">
+                <select class="form-control" name="book_id" style="max-width:350px;">
+                    {% for book in books %}
+                        <option value="{{ book.id }}">{{ book.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
     </div>
 {% endblock %}
