@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, session
+from flask import Flask, render_template, session, request
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -25,7 +25,13 @@ db = scoped_session(sessionmaker(bind=engine))
 def index():
     return render_template("index.html")
 
-@app.route("/next")
-def next():
-    return render_template("search.html")
+@app.route("/search", methods=["POST"])
+def search():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    return render_template("search.html", username=username, password=password)
+
+@app.route("/error")
+def error():
+    return render_template("error.html")
 

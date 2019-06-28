@@ -10,18 +10,21 @@
     <div class="center-form">
         <label for="register">Register</label>
         <form action="" id="register">
-            <input type="text" placeholder="username">
-            <input type="password" placeholder="password">
-            <button>Submit</button>
+            <input type="text" placeholder="Choose a username">
+            <input type="password" placeholder="Choose a password">
+            <div class="register-button">
+                <button>Create Account</button>
+            </div>
         </form>
         <h5>OR</h5>
         <label for="log-in">Log In</label>
-        <form action="{{ url_for('next') }}" id="log-in">
-            <input type="text" placeholder="username">
-            <input type="password" placeholder="password">
-            <button>Submit</button>
+        <form action="{{ url_for('search') }}" method="post" id="log-in">
+            <input type="text" name="username" placeholder="Enter your username">
+            <input type="password" name="password" placeholder="Enter your password">
+            <div class="register-button">
+                <button>Enter Site</button>
+            </div>
         </form>
     </div>
-
-        
+   
 {% endblock %}
