@@ -29,9 +29,18 @@ def index():
 def search():
     username = request.form.get("username")
     password = request.form.get("password")
+
+    user = db.execute("SELECT * FROM users WHERE username = :username", 
+    {"username": username}).fetchone()
+
+    if user is None:
+        return render_template("error.html", message="Account doesn't exist. Please create an account.")
+    
+    if password != user.password:
+        return render_template("error.html", message="Invalid password.")
+
     return render_template("search.html", username=username, password=password)
 
 @app.route("/error")
 def error():
     return render_template("error.html")
-
