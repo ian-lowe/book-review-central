@@ -1,15 +1,27 @@
 {% extends "template.html" %}
 
 {% block title %}
-    Index title!
+    Book Review Central
 {% endblock %}
 
 {% block body %}
-    {% for book in books %}
-    <div style="width:300px;border:1px solid black;">
-        <p>Title: {{ book.title}}</p>
-        <p>Author: {{ book.author }}</p>
-        <p>Year: {{ book.year }}</p>
-    </div>  
-    {% endfor %}
+    <h1>Book Review Central</h1>
+
+    <div class="center-form">
+        <label for="register">Register</label>
+        <form action="" id="register">
+            <input type="text" placeholder="username">
+            <input type="password" placeholder="password">
+            <button>Submit</button>
+        </form>
+        <h5>OR</h5>
+        <label for="log-in">Log In</label>
+        <form action="{{ url_for('next') }}" id="log-in">
+            <input type="text" placeholder="username">
+            <input type="password" placeholder="password">
+            <button>Submit</button>
+        </form>
+    </div>
+
+        
 {% endblock %}

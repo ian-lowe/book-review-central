@@ -23,11 +23,9 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
-    books = db.execute("SELECT * FROM books WHERE year = 1999").fetchall()
-    return render_template("index.html", books=books)
+    return render_template("index.html")
 
 @app.route("/next")
 def next():
-    books = db.execute("SELECT * FROM books").fetchall()
-    return render_template("next.html", books=books)
+    return render_template("search.html")
 

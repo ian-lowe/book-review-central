@@ -1,0 +1,47 @@
+body {
+    background-color: #8877998e;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+h4 {
+    text-align: center;
+    margin-bottom: 0px;
+}
+
+h5 {
+    margin: 15px 0 5px 5px;
+}
+
+label {
+    font-weight: 600;
+    margin: 10px 0 5px 1px;
+    background-color: rgb(238, 255, 0);
+}
+
+.center-form {
+    width: 450px;
+    height: 200px;
+    margin: 50px auto 50px auto;
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.center-form p {
+    margin-top: 10px;
+}
+
+.search {
+    margin: 50px auto 0 auto;
+    width: 405px;
+    height: 405px;
+}
+
+.search-width {
+    width: 400px;
+}
+
+
