@@ -59,4 +59,14 @@ label {
     border: 1px solid black;
 }
 
+.log-out {
+    float: right;
+}
+
+.reg-btn {
+    color:lightgreen;
+    background-color: #000000;
+    margin-left:25px;
+}
+
 
