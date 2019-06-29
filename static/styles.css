@@ -23,7 +23,7 @@ label {
 }
 
 .center-form {
-    width: 400px;
+    width: 500px;
     height: 280px;
     margin: 50px auto 50px auto;
     padding: 5px;
@@ -63,10 +63,16 @@ label {
     float: right;
 }
 
-.reg-btn {
-    color:lightgreen;
-    background-color: #000000;
+.success {
+    color:green;
     margin-left:25px;
+    font-size: 12px;
+}
+
+.error {
+    color: red;
+    margin-left: 25px;
+    font-size: 12px;
 }
 
 
