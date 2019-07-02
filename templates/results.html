@@ -1,0 +1,39 @@
+{% extends "template.html" %}
+
+{% block title %}
+Search Results
+{% endblock %}
+
+{% block body %}
+<form action="{{ url_for('logout') }}">
+    <button class="log-out">Log Out</button>
+</form>
+<div>
+    <div class="search">
+        <label for="searchbar">Lets search for a book</label>
+        <form action="{{ url_for('results') }}" method="POST">
+            <input type="text" class="search-width" name="search-input"> <br>
+            <input type="radio" name="options" id="isbn" value="isbn"> ISBN
+            <input type="radio" name="options" id="title" value="title" checked="checked"> Title
+            <input type="radio" name="options" id="author" value="author"> Author
+            <p>
+                <button>Search</button>
+            </p>
+        </form>
+    </div>
+</div>
+
+<table style="width:100%;">
+    <th>ISBN</th>
+    <th>TITLE</th>
+    <th>AUTHOR</th>
+    {% for result in results %}
+    <tr>
+        <td>{{ result.isbn }}</td>
+        <td>{{ result.title }}</td>
+        <td>{{ result.author }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

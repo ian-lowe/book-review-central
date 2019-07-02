@@ -1,6 +1,6 @@
 body {
     background-color: #E9EDDE;
-    margin: 20px;
+    margin: 40px;
 }
 
 h1 {
@@ -36,7 +36,7 @@ label {
 .search {
     margin: 50px auto 0 auto;
     width: 405px;
-    height: 405px;
+    height: 200px;
 }
 
 .search-width {
@@ -73,6 +73,13 @@ label {
     color: red;
     margin-left: 25px;
     font-size: 12px;
+}
+
+.warning {
+    color: red;
+    text-align: center;
+    font-size: 20px;
+    margin-top: 10px;
 }
 
 

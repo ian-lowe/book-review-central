@@ -6,10 +6,10 @@
 
 {% block body %}
     <h1>Book Review Central</h1>
-
+    <p class="{{ class_name }}">{{ message }}</p>
     <div class="center-form">
         <label for="register">Register</label>
-        <form action="{{ url_for('register') }}" method="post" id="register">
+        <form action="{{ url_for('register') }}" method="POST" id="register">
             <input type="text" name="username-reg" placeholder="Choose a username">
             <input type="password" name="password-reg" placeholder="Choose a password">
             <div class="register-button">
@@ -18,7 +18,7 @@
         </form>
         <h5>OR</h5>
         <label for="log-in">Log In</label>
-        <form action="{{ url_for('search') }}" method="post" id="log-in">
+        <form action="{{ url_for('login') }}" method="POST" id="log-in">
             <input type="text" name="username" placeholder="Enter your username">
             <input type="password" name="password" placeholder="Enter your password">
             <div class="register-button">

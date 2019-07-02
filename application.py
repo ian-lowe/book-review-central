@@ -1,18 +1,19 @@
 import os
 
-from flask import Flask, render_template, session, request, Markup
+from flask import Flask, render_template, session, request, redirect, url_for
 from flask_session import Session
 from flask_bcrypt import Bcrypt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 app = Flask(__name__)
+app.secret_key = os.urandom(16)
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
-# Configure session to use filesystem
+#Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
@@ -25,13 +26,12 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
-
 @app.route("/")
 def index():
     return render_template("index.html")
 
 @app.route("/search", methods=["POST"])
-def search():
+def login():
     username = request.form.get("username").lower()
     password = request.form.get("password")
 
@@ -48,11 +48,9 @@ def search():
         return render_template("index.html", message_l="Invalid password.",
         class_name="error")
 
-    return render_template("search.html", username=username)
+    session["users"] = user.username
 
-@app.route("/error")
-def error():
-    return render_template("error.html")
+    return render_template("search.html", username=user.username)
 
 @app.route("/", methods=["POST"])
 def register():
@@ -79,3 +77,31 @@ def register():
     else:
         return render_template("index.html", message_r="Username taken. Please choose another.",
         class_name="error")
+
+@app.route('/logout')
+def logout():
+    session.pop("users", None)
+    return render_template("index.html", message="For security reasons, please be sure to close this window when finished!", class_name="warning")
+
+
+@app.route('/results', methods=["POST"])
+def results():
+    query = "%"
+    query += request.form.get("search-input")
+    query += "%"
+
+    option = request.form['options']
+    if option is "":
+        return "test"
+
+    if option == "isbn":
+        results = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": query}).fetchall()
+        return render_template("results.html", results=results)
+    elif option == "title":
+        results = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title)", {"title": query}).fetchall()
+        return render_template("results.html", results=results)
+    elif option == "author":
+        results = db.execute("SELECT * FROM books WHERE LOWER(author) LIKE LOWER(:author)", {"author": query}).fetchall()
+        return render_template("results.html", results=results)
+    else:
+        return "test"
