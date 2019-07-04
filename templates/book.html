@@ -1,0 +1,15 @@
+{% extends "template.html" %}
+
+{% block title %}
+Search Results
+{% endblock %}
+
+{% block body %}
+<form action="{{ url_for('logout') }}" method="POST">
+    <button class="log-out">Log Out</button>
+</form>
+<div style="height: 50px;"><a href="/search"><--- back to search</a></div>
+<h2>"{{ book.title }}"</h2>
+<h4>by {{ book.author }}</h4>
+<p style="text-align: center">Published: {{ book.year }} || ISBN: {{ book.isbn }}</p>
+{% endblock %}

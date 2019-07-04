@@ -7,6 +7,22 @@ h1 {
     text-align: center;
 }
 
+.index-header {
+    margin-right: 120px;
+}
+
+.search-header {
+    margin-right: 160px;
+}
+
+h2 {
+    text-align: center;
+}
+
+h3 {
+    text-align: center;
+}
+
 h4 {
     text-align: center;
     margin-bottom: 0px;
@@ -15,6 +31,7 @@ h4 {
 h5 {
     margin: 15px 0 5px 5px;
 }
+
 
 label {
     font-weight: 600;
@@ -92,3 +109,6 @@ label {
     border-bottom: 1px solid lightgray;
 }
 
+.flashes {
+    color: red;
+}

@@ -1,7 +1,7 @@
 import os
 import string
 
-from flask import Flask, render_template, session, request, redirect, url_for
+from flask import Flask, render_template, session, request, redirect, url_for, flash
 from flask_session import Session
 from flask_bcrypt import Bcrypt
 from sqlalchemy import create_engine
@@ -29,30 +29,46 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
+    # if user is already logged in, redirect
+    if session.get('user') != None:
+        return redirect(url_for('login'))
 
+    # else render login page
     return render_template("index.html")
 
-@app.route("/search", methods=["POST"])
+@app.route("/search", methods=["POST", "GET"])
 def login():
-    username = request.form.get("username").lower()
-    password = request.form.get("password")
+    # log user in and send to search page
+    if request.method == "POST":
+        username = request.form.get("username").lower()
+        password = request.form.get("password")
 
-    user = db.execute("SELECT * FROM users WHERE username = :username",
-    {"username": username}).fetchone()
+        user = db.execute("SELECT * FROM users WHERE username = :username",
+        {"username": username}).fetchone()
 
-    if user is None:
-        return render_template("index.html", message_l="Account doesn't exist. Please create an account.",
-        class_name="error")
+        if user is None:
+            return render_template("index.html", message_l="Account doesn't exist. Please create an account.",
+            class_name="error")
 
-    is_pass = bcrypt.check_password_hash(user.password, password)
+        is_pass = bcrypt.check_password_hash(user.password, password)
 
-    if is_pass == False:
-        return render_template("index.html", message_l="Invalid password.",
-        class_name="error")
+        if is_pass == False:
+            return render_template("index.html", message_l="Invalid password.",
+            class_name="error")
 
-    session["user"] = user.username
+        session["user"] = user.username
 
-    return render_template("search.html")
+        return render_template("search.html")
+    # method is GET
+    else:
+        # if not logged in, redirect to login page
+        if session.get('user') == None:
+            flash("Please log in to use search feature.")
+            return redirect(url_for('index'))
+        # reload search page
+        else:
+            return render_template("search.html")
+
 
 @app.route("/", methods=["POST"])
 def register():
@@ -83,13 +99,14 @@ def register():
 @app.route('/logout', methods=["POST"])
 def logout():
     session.pop("user", None)
-    return render_template("index.html", message="For security reasons, please be sure to close this window when finished!", class_name="warning")
+    return redirect(url_for('index'))
 
 
-@app.route('/results', methods=["POST", "GET"])
-def results():
+@app.route('/books', methods=["POST"])
+def books():
 
     if session.get('user') == None:
+        flash("Session expired. Please log in to use search feature.")
         return redirect(url_for('index'))
 
     query = "%"
@@ -97,27 +114,26 @@ def results():
     query += "%"
 
     option = request.form['options']
-    if option is "":
-        return "test"
 
     if option == "isbn":
-        results = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": query}).fetchall()
-        return render_template("results.html", results=results)
+        books = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": query}).fetchall()
+        return render_template("books.html", books=books)
 
     elif option == "title":
-        results = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title)", {"title": query}).fetchall()
-        return render_template("results.html", results=results)
+        books = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title)", {"title": query}).fetchall()
+        return render_template("books.html", books=books)
 
     elif option == "author":
-        results = db.execute("SELECT * FROM books WHERE LOWER(author) LIKE LOWER(:author)", {"author": query}).fetchall()
-        return render_template("results.html", results=results)
-    
+        books = db.execute("SELECT * FROM books WHERE LOWER(author) LIKE LOWER(:author)", {"author": query}).fetchall()
+        return render_template("books.html", books=books)
+
     else:
         return "test"
 
-@app.route("/results/<string:isbn>")
+@app.route("/books/<string:isbn>")
 def book(isbn):
-    return isbn
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+    return render_template("book.html", book=book)
 
 def remove_punctuation(str):
     result = ""
