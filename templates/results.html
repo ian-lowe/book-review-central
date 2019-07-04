@@ -5,9 +5,11 @@ Search Results
 {% endblock %}
 
 {% block body %}
-<form action="{{ url_for('logout') }}">
+<form action="{{ url_for('logout') }}" method="POST">
     <button class="log-out">Log Out</button>
 </form>
+<!-- empty h1 used as an empty container -->
+<h1></h1>
 <div>
     <div class="search">
         <label for="searchbar">Lets search for a book</label>
@@ -23,14 +25,14 @@ Search Results
     </div>
 </div>
 
-<table style="width:100%;">
+<table class="results">
     <th>ISBN</th>
     <th>TITLE</th>
     <th>AUTHOR</th>
     {% for result in results %}
     <tr>
         <td>{{ result.isbn }}</td>
-        <td>{{ result.title }}</td>
+        <td><a href="{{ url_for('book', isbn=result.isbn) }}">{{ result.title }}</a></td>
         <td>{{ result.author }}</td>
     </tr>
     {% endfor %}

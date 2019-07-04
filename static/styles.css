@@ -82,4 +82,13 @@ label {
     margin-top: 10px;
 }
 
+.results {
+    text-align: center;
+    width: 100%;
+    min-width: 700px;
+}
+
+.results tr {
+    border-bottom: 1px solid lightgray;
+}
 

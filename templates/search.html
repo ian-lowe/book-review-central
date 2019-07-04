@@ -5,12 +5,12 @@
 {% endblock %}
 
 {% block body %}
-<form action="{{ url_for('logout') }}">
+<form action="{{ url_for('logout') }}" method="POST">
     <button class="log-out">Log Out</button>
 </form>
-<h1>Hello, {{ username }}!</h1>
     <div>
         <div class="search">
+            <h1 style="display:inline-block;">Hello, {{ session['user'] }}!</h1>
             <label for="searchbar">Lets search for a book</label>
             <form action="{{ url_for('results') }}" method="POST">
                 <input type="text" class="search-width" name="search-input"> <br>

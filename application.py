@@ -1,4 +1,5 @@
 import os
+import string
 
 from flask import Flask, render_template, session, request, redirect, url_for
 from flask_session import Session
@@ -28,6 +29,7 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
+
     return render_template("index.html")
 
 @app.route("/search", methods=["POST"])
@@ -48,9 +50,9 @@ def login():
         return render_template("index.html", message_l="Invalid password.",
         class_name="error")
 
-    session["users"] = user.username
+    session["user"] = user.username
 
-    return render_template("search.html", username=user.username)
+    return render_template("search.html")
 
 @app.route("/", methods=["POST"])
 def register():
@@ -78,14 +80,18 @@ def register():
         return render_template("index.html", message_r="Username taken. Please choose another.",
         class_name="error")
 
-@app.route('/logout')
+@app.route('/logout', methods=["POST"])
 def logout():
-    session.pop("users", None)
+    session.pop("user", None)
     return render_template("index.html", message="For security reasons, please be sure to close this window when finished!", class_name="warning")
 
 
-@app.route('/results', methods=["POST"])
+@app.route('/results', methods=["POST", "GET"])
 def results():
+
+    if session.get('user') == None:
+        return redirect(url_for('index'))
+
     query = "%"
     query += request.form.get("search-input")
     query += "%"
@@ -97,11 +103,25 @@ def results():
     if option == "isbn":
         results = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": query}).fetchall()
         return render_template("results.html", results=results)
+
     elif option == "title":
         results = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title)", {"title": query}).fetchall()
         return render_template("results.html", results=results)
+
     elif option == "author":
         results = db.execute("SELECT * FROM books WHERE LOWER(author) LIKE LOWER(:author)", {"author": query}).fetchall()
         return render_template("results.html", results=results)
+    
     else:
         return "test"
+
+@app.route("/results/<string:isbn>")
+def book(isbn):
+    return isbn
+
+def remove_punctuation(str):
+    result = ""
+    for char in str:
+        if char not in string.punctuation:
+            result += char
+    return result
