@@ -104,7 +104,6 @@ def logout():
 
 @app.route('/books', methods=["POST"])
 def books():
-
     if session.get('user') == None:
         flash("Session expired. Please log in to use search feature.")
         return redirect(url_for('index'))
@@ -117,15 +116,15 @@ def books():
 
     if option == "isbn":
         books = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": query}).fetchall()
-        return render_template("books.html", books=books)
+        return render_template("books.html", books=books, option=option)
 
     elif option == "title":
         books = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title)", {"title": query}).fetchall()
-        return render_template("books.html", books=books)
+        return render_template("books.html", books=books, option=option)
 
     elif option == "author":
         books = db.execute("SELECT * FROM books WHERE LOWER(author) LIKE LOWER(:author)", {"author": query}).fetchall()
-        return render_template("books.html", books=books)
+        return render_template("books.html", books=books, option=option)
 
     else:
         return "test"

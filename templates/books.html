@@ -15,16 +15,29 @@ Search Results
         <label for="searchbar">Lets search for a book</label>
         <form action="{{ url_for('books') }}" method="POST">
             <input type="text" class="search-width" name="search-input"> <br>
+            <!-- preserves state of last checked radio button on page load -->
+            {% if option == 'isbn' %}
+            <input type="radio" name="options" id="isbn" value="isbn" checked="checked"> ISBN
+            <input type="radio" name="options" id="title" value="title"> Title
+            <input type="radio" name="options" id="author" value="author"> Author
+
+            {% elif option == 'title' %}
             <input type="radio" name="options" id="isbn" value="isbn"> ISBN
             <input type="radio" name="options" id="title" value="title" checked="checked"> Title
             <input type="radio" name="options" id="author" value="author"> Author
+
+            {% else %}
+            <input type="radio" name="options" id="isbn" value="isbn"> ISBN
+            <input type="radio" name="options" id="title" value="title"> Title
+            <input type="radio" name="options" id="author" value="author" checked="checked"> Author
+            {% endif %}
             <p>
                 <button>Search</button>
             </p>
         </form>
     </div>
 </div>
-
+{% if books %}
 <table class="results">
     <th>ISBN</th>
     <th>TITLE</th>
@@ -37,5 +50,8 @@ Search Results
     </tr>
     {% endfor %}
 </table>
+{% else %}
+<p class="align-center">Your search did not match any books.</p>
+{% endif %}
 
 {% endblock %}
