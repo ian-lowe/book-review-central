@@ -137,7 +137,8 @@ label {
 }
 
 .ratings-container {
-    width: 100%;
+    min-width: 400px;
+    max-width: 800px;
     height: 100%;
     border: 1px solid black;
     margin: 0px auto 10px auto;
@@ -164,3 +165,11 @@ label {
     margin-right: 208px;
 }
 
+.no-reviews {
+    text-align: center;
+    
+}
+
+.book-info {
+    margin-bottom: 100px;
+}

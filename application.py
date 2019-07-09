@@ -137,7 +137,7 @@ def book(isbn):
     if request.method == 'GET':
         book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
 
-        reviews = db.execute("SELECT review FROM reviews WHERE book_isbn = :isbn", {"isbn": isbn}).fetchall()
+        reviews = db.execute("SELECT review, score, username FROM reviews JOIN users ON reviews.user_id = users.user_id WHERE book_isbn = :isbn", {"isbn": isbn}).fetchall()
 
         res = requests.get("https://www.goodreads.com/book/review_counts.json",
                         params={
@@ -145,7 +145,7 @@ def book(isbn):
                             "isbns": isbn
                         })
         if res.status_code != 200:
-            return render_template("book.html", book=book)
+            return render_template("book.html", book=book) 
 
         res_json = res.json()
         res_avg = res_json['books'][0]['average_rating']

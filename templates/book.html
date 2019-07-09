@@ -22,16 +22,22 @@ Search Results
             </p>
         </form>
     </div>
-<h2>"{{ book.title }}"</h2>
-<h4>by {{ book.author }}</h4>
-<p style="text-align: center">Published: {{ book.year }} || ISBN: {{ book.isbn }}</p>
-<p style="text-align: center">Goodreads average: {{ res_avg }} out of {{ res_count }} ratings</p>
+
+<div class="book-info">
+    <h2>"{{ book.title }}"</h2>
+    <h4>by {{ book.author }}</h4>
+    <p style="text-align: center">Published: {{ book.year }} || ISBN: {{ book.isbn }}</p>
+    <p style="text-align: center">Goodreads average: {{ res_avg }} out of {{ res_count }} ratings</p>
+</div>
 
 <div>
+    {% if reviews|length == 0 %}
+        <p class="no-reviews">No reviews yet! Be the first by submitting below.</p>
+    {% endif %}
     {% for review in reviews %}
     <div class="ratings-container">
-        <span class="review-label">Review by: test</span>
-        <span class="rating-label">User Rating: test</span>
+        <span class="review-label">Review by: {{ review.username }}</span>
+        <span class="rating-label">User Rating: {{ review.score }}</span>
         <hr>
         <div class="review">
             {{ review.review }}
@@ -39,6 +45,7 @@ Search Results
     </div>
     {% endfor %}
 </div>
+
 <form class="align-center" action="{{ url_for('book', isbn=book.isbn) }}" id="review-input" method="POST">
     <div><label>Add a review</label></div>
     <textarea name="review-input" cols="40" rows="3"></textarea>
