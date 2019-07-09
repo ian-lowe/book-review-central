@@ -145,7 +145,7 @@ def book(isbn):
                             "isbns": isbn
                         })
         if res.status_code != 200:
-            return render_template("book.html", book=book) 
+            return render_template("book.html", book=book)
 
         res_json = res.json()
         res_avg = res_json['books'][0]['average_rating']
@@ -153,18 +153,25 @@ def book(isbn):
 
         return render_template("book.html", book=book, res_avg=res_avg, res_count=(format (res_count, ',d')), reviews=reviews)
     else:
-        review = request.form.get("review-input")
+        review = request.form.get("review-input").strip()
+        if review =="":
+            flash("Review cannot be blank.")
+            return redirect(url_for('book', isbn=isbn))
+
         score = request.form['ratings']
         user_id = db.execute(
             "SELECT user_id FROM users WHERE username = :username", {
                 "username": session["user"]
             }).fetchone()
 
+        if db.execute("SELECT user_id from reviews WHERE book_isbn = :book_isbn AND user_id = :user_id", {"book_isbn": isbn, "user_id": user_id[0]}).rowcount == 0:
+            db.execute("INSERT INTO reviews (score, review, user_id, book_isbn) VALUES (:score, :review, :user_id, :book_isbn)", {"score": score, "review": review, "user_id": user_id[0], "book_isbn": isbn})
+            db.commit()
 
-        db.execute("INSERT INTO reviews (score, review, user_id, book_isbn) VALUES (:score, :review, :user_id, :book_isbn)", {"score": score, "review": review, "user_id": user_id[0], "book_isbn": isbn})
-        db.commit()
-
-        return redirect(url_for('book', isbn=isbn))
+            return redirect(url_for('book', isbn=isbn))
+        else:
+            flash("You have already subbmited a review for this book.")
+            return redirect(url_for('book', isbn=isbn))
 
 # @app.route("/books/<string:isbn>/reviews")
 # def reviews(isbn):
