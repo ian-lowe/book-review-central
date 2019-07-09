@@ -6,7 +6,7 @@
 
 {% block body %}
 <form action="{{ url_for('logout') }}" method="POST">
-    <button class="log-out">Log Out</button>
+    <button class="log-out buttons btn-sm">Log Out</button>
 </form>
 <h1 class="search-header">Hello, {{ session['user'] }}!</h1>
     <div>
@@ -18,10 +18,9 @@
                 <input type="radio" name="options" id="title" value="title" checked="checked"> Title
                 <input type="radio" name="options" id="author" value="author"> Author
                 <p>
-                    <button>Search</button>
+                    <button class="buttons btn-sm">Search</button>
                 </p>
             </form>
         </div>
     </div>
-
 {% endblock %}

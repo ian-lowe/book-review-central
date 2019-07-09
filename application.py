@@ -1,5 +1,8 @@
 import os
 import string
+import requests
+import sys
+
 
 from flask import Flask, render_template, session, request, redirect, url_for, flash
 from flask_session import Session
@@ -109,7 +112,7 @@ def books():
         return redirect(url_for('index'))
 
     query = "%"
-    query += request.form.get("search-input")
+    query += request.form.get("search-input").strip()
     query += "%"
 
     option = request.form['options']
@@ -129,14 +132,43 @@ def books():
     else:
         return "test"
 
-@app.route("/books/<string:isbn>")
+@app.route("/books/<string:isbn>", methods=['GET', 'POST'])
 def book(isbn):
-    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
-    return render_template("book.html", book=book)
+    if request.method == 'GET':
+        book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
 
-def remove_punctuation(str):
-    result = ""
-    for char in str:
-        if char not in string.punctuation:
-            result += char
-    return result
+        reviews = db.execute("SELECT review FROM reviews WHERE book_isbn = :isbn", {"isbn": isbn}).fetchall()
+
+        res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                        params={
+                            "key": "GJZSpTvdcwByldSQzwRBfg",
+                            "isbns": isbn
+                        })
+        if res.status_code != 200:
+            return render_template("book.html", book=book)
+
+        res_json = res.json()
+        res_avg = res_json['books'][0]['average_rating']
+        res_count = res_json['books'][0]['ratings_count']
+
+        return render_template("book.html", book=book, res_avg=res_avg, res_count=(format (res_count, ',d')), reviews=reviews)
+    else:
+        review = request.form.get("review-input")
+        score = request.form['ratings']
+        user_id = db.execute(
+            "SELECT user_id FROM users WHERE username = :username", {
+                "username": session["user"]
+            }).fetchone()
+
+
+        db.execute("INSERT INTO reviews (score, review, user_id, book_isbn) VALUES (:score, :review, :user_id, :book_isbn)", {"score": score, "review": review, "user_id": user_id[0], "book_isbn": isbn})
+        db.commit()
+
+        return redirect(url_for('book', isbn=isbn))
+
+# @app.route("/books/<string:isbn>/reviews")
+# def reviews(isbn):
+
+
+# @app.route("/api/<string:isbn>")
+# def api():

@@ -6,10 +6,8 @@ Search Results
 
 {% block body %}
 <form action="{{ url_for('logout') }}" method="POST">
-    <button class="log-out">Log Out</button>
+    <button class="log-out buttons btn-sm">Log Out</button>
 </form>
-<!-- empty h1 used as an empty container -->
-<h1></h1>
 <div>
     <div class="search">
         <label for="searchbar">Lets search for a book</label>
@@ -32,7 +30,7 @@ Search Results
             <input type="radio" name="options" id="author" value="author" checked="checked"> Author
             {% endif %}
             <p>
-                <button>Search</button>
+                <button class="buttons btn-sm">Search</button>
             </p>
         </form>
     </div>
@@ -53,5 +51,4 @@ Search Results
 {% else %}
 <p class="align-center">Your search did not match any books.</p>
 {% endif %}
-
 {% endblock %}
