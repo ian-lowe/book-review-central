@@ -1,10 +1,7 @@
 import os
-import string
 import requests
-import sys
 
-
-from flask import Flask, render_template, session, request, redirect, url_for, flash
+from flask import Flask, render_template, session, request, redirect, url_for, flash, jsonify
 from flask_session import Session
 from flask_bcrypt import Bcrypt
 from sqlalchemy import create_engine
@@ -174,7 +171,7 @@ def book(isbn):
                 "username": session["user"]
             }).fetchone()
 
-        if db.execute("SELECT user_id from reviews WHERE book_isbn = :book_isbn AND user_id = :user_id", {"book_isbn": isbn, "user_id": user_id[0]}).rowcount == 0:
+        if db.execute("SELECT user_id FROM reviews WHERE book_isbn = :book_isbn AND user_id = :user_id", {"book_isbn": isbn, "user_id": user_id[0]}).rowcount == 0:
             db.execute("INSERT INTO reviews (score, review, user_id, book_isbn) VALUES (:score, :review, :user_id, :book_isbn)", {"score": score, "review": review, "user_id": user_id[0], "book_isbn": isbn})
             db.commit()
 
@@ -183,9 +180,23 @@ def book(isbn):
             flash("You have already subbmited a review for this book.")
             return redirect(url_for('book', isbn=isbn))
 
-# @app.route("/books/<string:isbn>/reviews")
-# def reviews(isbn):
 
+@app.route("/api/<string:isbn>")
+def api(isbn):
+    book = db.execute("SELECT title, author, year FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+    if book is None:
+        return jsonify({"Error": "Invalid ISBN"}), 422
 
-# @app.route("/api/<string:isbn>")
-# def api():
+    review_count = db.execute("SELECT COUNT(book_isbn) FROM reviews WHERE book_isbn = :book_isbn", {"book_isbn": isbn}).fetchone()
+
+    print(review_count, flush=True)
+
+    average_score = db.execute("SELECT CAST(AVG(score) as FLOAT) FROM reviews WHERE book_isbn = :book_isbn", {"book_isbn": isbn}).fetchone()
+
+    return jsonify({
+        "title": book.title,
+        "author": book.author,
+        "year": book.year,
+        "review_count": review_count[0],
+        "average_score": average_score[0]
+    })
