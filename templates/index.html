@@ -10,7 +10,7 @@
     <div class="center-form">
         <label for="register">Register</label>
         <form action="{{ url_for('register') }}" method="POST" id="register">
-            <input type="text" name="username-reg" placeholder="Choose a username">
+            <input type="text" name="username-reg" placeholder="Choose a username" value="{{ username_attempt_r }}">
             <input type="password" name="password-reg" placeholder="Choose a password">
             <div class="register-button">
                 <button class="btn-sm">Create Account</button><span class="{{ class_name }}">{{ message_r }}</span>
@@ -19,7 +19,7 @@
         <h5>OR</h5>
         <label for="log-in">Log In</label>
         <form action="{{ url_for('login') }}" method="POST" id="log-in">
-            <input type="text" name="username" placeholder="Enter your username">
+            <input type="text" name="username" placeholder="Enter your username" value="{{ username_attempt }}">
             <input type="password" name="password" placeholder="Enter your password">
             <div class="register-button">
                 <button class="btn-sm">Enter Site</button><span class="{{ class_name }}">{{ message_l }}</span>

@@ -40,25 +40,30 @@ def index():
 def login():
     # log user in and send to search page
     if request.method == "POST":
-        username = request.form.get("username").lower()
+        username_attempt = request.form.get("username")
+
+        username = username_attempt.lower()
         password = request.form.get("password")
+
+        username_attempt = request.form.get("username")
 
         user = db.execute("SELECT * FROM users WHERE username = :username",
         {"username": username}).fetchone()
 
         if user is None:
             return render_template("index.html", message_l="Account doesn't exist. Please create an account.",
-            class_name="error")
+            class_name="error", username_attempt=username_attempt)
 
         is_pass = bcrypt.check_password_hash(user.password, password)
 
         if is_pass == False:
             return render_template("index.html", message_l="Invalid password.",
-            class_name="error")
+            class_name="error", username_attempt=username_attempt)
 
         session["user"] = user.username
 
         return render_template("search.html")
+
     # method is GET
     else:
         # if not logged in, redirect to login page
@@ -72,19 +77,25 @@ def login():
 
 @app.route("/", methods=["POST"])
 def register():
-    username = request.form.get("username-reg").lower()
+    username_attempt = request.form.get("username-reg")
+
+    username = username_attempt.lower()
     password = request.form.get("password-reg")
 
     if len(username) > 20:
-        return render_template("index.html", message_r="Invalid username. Max length 20 characters.", class_name="error")
+        return render_template("index.html", message_r="Invalid username. Max length 20 characters.", class_name="error", username_attempt_r=username_attempt)
 
     if len(password) < 6:
-        return render_template("index.html", message_r="Invalid password. Minimum length 6 characters.",
-        class_name="error")
+        return render_template(
+            "index.html",
+            message_r="Invalid password. Minimum length 6 characters.",
+            class_name="error",
+            username_attempt_r=username_attempt)
 
     username_checkdb = db.execute("SELECT * FROM users WHERE username = :username", {
         "username": username}).fetchone()
 
+    # if username doesnt exist, create account
     if username_checkdb is None:
         hashed_pass = bcrypt.generate_password_hash(password).decode('utf-8')
         db.execute("INSERT INTO users (username, password) VALUES (:username, :password)", {"username": username, "password": hashed_pass})
@@ -93,8 +104,12 @@ def register():
         class_name="success")
 
     else:
-        return render_template("index.html", message_r="Username taken. Please choose another.",
-        class_name="error")
+        return render_template(
+            "index.html",
+            message_r="Username taken. Please choose another.",
+            class_name="error",
+            username_attempt_r=username_attempt)
+
 
 @app.route('/logout', methods=["POST"])
 def logout():
@@ -102,55 +117,75 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/books', methods=["POST"])
+@app.route('/books', methods=["GET", "POST"])
 def books():
     if session.get('user') == None:
-        flash("Session expired. Please log in to use search feature.")
+        flash("Please log in to use search feature.")
         return redirect(url_for('index'))
 
-    query = "%"
-    # preserve raw query to preserve search on page change
-    raw_query = request.form.get("search-input")
-    query += raw_query.strip()
-    query += "%"
-
-    option = request.form['options']
-
-    if option == "isbn":
-        books = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn ORDER BY title ASC", {"isbn": query}).fetchall()
-        return render_template("books.html", books=books, option=option, raw_query=raw_query)
-
-    elif option == "title":
-        books = db.execute(
-            "SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title) ORDER BY title ASC",
-            {
-                "title": query
-            }).fetchall()
-        return render_template("books.html", books=books, option=option, raw_query=raw_query)
-
-    elif option == "author":
-        books = db.execute(
-            "SELECT * FROM books WHERE LOWER(author) LIKE LOWER(:author) ORDER BY title ASC",
-            {
-                "author": query
-            }).fetchall()
-        return render_template("books.html", books=books, option=option, raw_query=raw_query)
+    if request.method == 'GET':
+        return render_template("search.html")
 
     else:
-        return "test"
+        query = "%"
+        # preserve raw query to preserve search on page change
+        raw_query = request.form.get("search-input")
+        query += raw_query.strip()
+        query += "%"
 
-@app.route("/books/<string:isbn>", methods=['GET', 'POST'])
+        # validate radio button
+        try:
+            option = request.form['options']
+        except:
+            flash("Search option must be selected.")
+            return render_template("search.html")
+
+        if option == "isbn":
+            books = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn ORDER BY title ASC", {"isbn": query}).fetchall()
+            return render_template("books.html", books=books, option=option, raw_query=raw_query)
+
+        elif option == "title":
+            books = db.execute(
+                "SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title) ORDER BY title ASC",
+                {
+                    "title": query
+                }).fetchall()
+            return render_template("books.html", books=books, option=option, raw_query=raw_query)
+
+        elif option == "author":
+            books = db.execute(
+                "SELECT * FROM books WHERE LOWER(author) LIKE LOWER(:author) ORDER BY title ASC",
+                {
+                    "author": query
+                }).fetchall()
+            return render_template("books.html", books=books, option=option, raw_query=raw_query)
+
+        # option value changed client side
+        else:
+            flash("Cannot search by that option.")
+            return render_template("search.html")
+
+
+@app.route("/books/<string:isbn>", methods=["GET", "POST"])
 def book(isbn):
     if request.method == 'GET':
+        # check if user is logged in
+        if session.get('user') == None:
+            flash("Please log in to view book data.")
+            return redirect(url_for('index'))
+
         book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
 
         reviews = db.execute("SELECT review, score, username FROM reviews JOIN users ON reviews.user_id = users.user_id WHERE book_isbn = :isbn", {"isbn": isbn}).fetchall()
 
+        # get Goodreads API data
         res = requests.get("https://www.goodreads.com/book/review_counts.json",
                         params={
                             "key": "GJZSpTvdcwByldSQzwRBfg",
                             "isbns": isbn
                         })
+
+        # check if book is available on Goodreads
         if res.status_code != 200:
             return render_template("book.html", book=book)
 
@@ -159,18 +194,28 @@ def book(isbn):
         res_count = res_json['books'][0]['ratings_count']
 
         return render_template("book.html", book=book, res_avg=res_avg, res_count=(format (res_count, ',d')), reviews=reviews)
+
+    # method is POST - submit a review
     else:
+        # check if user is logged in
+        if session.get('user') == None:
+            flash("Please log in to leave a review.")
+            return redirect(url_for('index'))
+
+        # get review from form
         review = request.form.get("review-input").strip()
         if review =="":
             flash("Review cannot be blank.")
             return redirect(url_for('book', isbn=isbn))
 
+        # get score from form
         score = request.form['ratings']
         user_id = db.execute(
             "SELECT user_id FROM users WHERE username = :username", {
                 "username": session["user"]
             }).fetchone()
 
+        # submit review if one review per user, per book rule isnt violated
         if db.execute("SELECT user_id FROM reviews WHERE book_isbn = :book_isbn AND user_id = :user_id", {"book_isbn": isbn, "user_id": user_id[0]}).rowcount == 0:
             db.execute("INSERT INTO reviews (score, review, user_id, book_isbn) VALUES (:score, :review, :user_id, :book_isbn)", {"score": score, "review": review, "user_id": user_id[0], "book_isbn": isbn})
             db.commit()
@@ -183,6 +228,8 @@ def book(isbn):
 
 @app.route("/api/<string:isbn>")
 def api(isbn):
+    """API for book information and stats"""
+
     book = db.execute("SELECT title, author, year FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if book is None:
         return jsonify({"Error": "Invalid ISBN"}), 422
