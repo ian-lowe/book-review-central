@@ -112,22 +112,32 @@ def books():
         return redirect(url_for('index'))
 
     query = "%"
-    query += request.form.get("search-input").strip()
+    # preserve raw query to preserve search on page change
+    raw_query = request.form.get("search-input")
+    query += raw_query.strip()
     query += "%"
 
     option = request.form['options']
 
     if option == "isbn":
-        books = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": query}).fetchall()
-        return render_template("books.html", books=books, option=option)
+        books = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn ORDER BY title ASC", {"isbn": query}).fetchall()
+        return render_template("books.html", books=books, option=option, raw_query=raw_query)
 
     elif option == "title":
-        books = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title)", {"title": query}).fetchall()
-        return render_template("books.html", books=books, option=option)
+        books = db.execute(
+            "SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title) ORDER BY title ASC",
+            {
+                "title": query
+            }).fetchall()
+        return render_template("books.html", books=books, option=option, raw_query=raw_query)
 
     elif option == "author":
-        books = db.execute("SELECT * FROM books WHERE LOWER(author) LIKE LOWER(:author)", {"author": query}).fetchall()
-        return render_template("books.html", books=books, option=option)
+        books = db.execute(
+            "SELECT * FROM books WHERE LOWER(author) LIKE LOWER(:author) ORDER BY title ASC",
+            {
+                "author": query
+            }).fetchall()
+        return render_template("books.html", books=books, option=option, raw_query=raw_query)
 
     else:
         return "test"
