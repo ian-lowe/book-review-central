@@ -318,3 +318,6 @@ def api(isbn):
         }
     )
 
+if __name__ == '__main__':
+    app.run()
+
