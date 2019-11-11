@@ -99,7 +99,16 @@ def register():
     username_attempt = request.form.get("username-reg")
 
     username = username_attempt.lower()
+    username = username.strip()
     password = request.form.get("password-reg")
+
+    if " " in username:
+        return render_template(
+            "index.html",
+            message_r="Invalid username. Username cannot contain spaces.",
+            class_name="error",
+            username_attempt_r=username_attempt,
+        )
 
     if len(username) > 20:
         return render_template(
