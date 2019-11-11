@@ -1,26 +1,28 @@
-{% extends "template.html" %}
-
-{% block title %}
-    Book Search
-{% endblock %}
-
-{% block body %}
+{% extends "template.html" %} {% block title %} Book Search {% endblock %} {%
+block body %}
 <form action="{{ url_for('logout') }}" method="POST">
-    <button class="log-out buttons btn-sm">Log Out</button>
+  <button class="log-out buttons btn-sm">Log Out</button>
 </form>
-<h1 class="search-header">Hello, {{ session['user'] }}!</h1>
-    <div>
-        <div class="search">
-            <label for="searchbar">Lets search for a book</label>
-            <form action="{{ url_for('books') }}" method="POST">
-                <input type="text" class="search-width" name="search-input"> <br>
-                <input type="radio" name="options" id="isbn" value="isbn"> ISBN
-                <input type="radio" name="options" id="title" value="title" checked="checked"> Title
-                <input type="radio" name="options" id="author" value="author"> Author
-                <p>
-                    <button class="buttons btn-sm">Search</button>
-                </p>
-            </form>
-        </div>
-    </div>
+<h1 class="search-header">Hello, {{ session["user"] }}!</h1>
+<div>
+  <div class="search">
+    <label for="searchbar">Lets search for a book</label>
+    <form action="{{ url_for('books') }}" method="POST">
+      <input type="text" class="search-width" name="search-input" /> <br />
+      <input type="radio" name="options" id="isbn" value="isbn" /> ISBN
+      <input
+        type="radio"
+        name="options"
+        id="title"
+        value="title"
+        checked="checked"
+      />
+      Title
+      <input type="radio" name="options" id="author" value="author" /> Author
+      <p>
+        <button class="buttons btn-sm">Search</button>
+      </p>
+    </form>
+  </div>
+</div>
 {% endblock %}

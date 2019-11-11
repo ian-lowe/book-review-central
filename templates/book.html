@@ -1,90 +1,114 @@
-{% extends "template.html" %}
-
-{% block title %}
-Search Results
-{% endblock %}
-
-{% block body %}
+{% extends "template.html" %} {% block title %} Search Results {% endblock %} {%
+block body %}
 <form action="{{ url_for('logout') }}" method="POST">
-    <button class="log-out buttons btn-sm">Log Out</button>
+  <button class="log-out buttons btn-sm">Log Out</button>
 </form>
 <div>
-    <div class="search">
-        <label for="searchbar">Lets search for a book</label>
-        <form action="{{ url_for('books') }}" method="POST">
-            <input type="text" class="search-width" name="search-input" value="{{ search }}"> <br>
-            <input type="radio" name="options" id="isbn" value="isbn"> ISBN
-            <input type="radio" name="options" id="title" value="title" checked="checked"> Title
-            <input type="radio" name="options" id="author" value="author"> Author
-            <p>
-                <button class="buttons btn-sm">Search</button>
-            </p>
-        </form>
-    </div>
-{% if book %}
-    <div class="book-info">
-        <h2>"{{ book.title }}"</h2>
-        <h4>by {{ book.author }}</h4>
-        <p style="text-align: center">Published: {{ book.year }} || ISBN: {{ book.isbn }}</p>
-        <p style="text-align: center">Goodreads average: {{ res_avg }} out of {{ res_count }} ratings</p>
-    </div>
-
-    <div>
-        {% if reviews|length == 0 %}
-            <p class="no-reviews">No reviews yet! Be the first by submitting below.</p>
-        {% endif %}
-        {% for review in reviews %}
-        <div class="ratings-container">
-            <span class="review-label"><i class="fas fa-user"></i><b> {{ review.username }}</b></span>
-            <span class="rating-label">User Rating:
-                {% if review.score == 1 %}
-                <i class="fas fa-star gold"></i>
-                {% elif review.score == 2 %}
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                {% elif review.score == 3 %}
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                {% elif review.score == 4 %}
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                {% else %}
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                {% endif %}
-            </span>
-            <hr>
-            <div class="review">
-                {{ review.review }}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <form class="align-center" action="{{ url_for('book', isbn=book.isbn) }}" id="review-input" method="POST">
-        <div><label>Add a review</label></div>
-        <textarea name="review-input" cols="40" rows="3"></textarea>
-        <div style="margin:5px;">
-            <div>
-                Rating:
-            </div>
-            <input type="radio" name="ratings" id="one" value="1"> 1
-            <input type="radio" name="ratings" id="two" value="2"> 2
-            <input type="radio" name="ratings" id="three" value="3" checked="checked"> 3
-            <input type="radio" name="ratings" id="four" value="4"> 4
-            <input type="radio" name="ratings" id="five" value="5"> 5
-        </div>
-        <p>
-            <button class="buttons btn-sm">Submit Review</button>
-        </p>
+  <div class="search">
+    <label for="searchbar">Lets search for a book</label>
+    <form action="{{ url_for('books') }}" method="POST">
+      <input
+        type="text"
+        class="search-width"
+        name="search-input"
+        value="{{ search }}"
+      />
+      <br />
+      <input type="radio" name="options" id="isbn" value="isbn" /> ISBN
+      <input
+        type="radio"
+        name="options"
+        id="title"
+        value="title"
+        checked="checked"
+      />
+      Title
+      <input type="radio" name="options" id="author" value="author" /> Author
+      <p>
+        <button class="buttons btn-sm">Search</button>
+      </p>
     </form>
-{% else %}
-    <p class="align-center">No book by that ISBN exists in our records.</p>
-{% endif %}
-{% endblock %}
+  </div>
+  {% if book %}
+  <div class="book-info">
+    <h2>"{{ book.title }}"</h2>
+    <h4>by {{ book.author }}</h4>
+    <p style="text-align: center">
+      Published: {{ book.year }} || ISBN: {{ book.isbn }}
+    </p>
+    <p style="text-align: center">
+      Goodreads average: {{ res_avg }} out of {{ res_count }} ratings
+    </p>
+  </div>
+
+  <div>
+    {% if reviews|length == 0 %}
+    <p class="no-reviews">No reviews yet! Be the first by submitting below.</p>
+    {% endif %} {% for review in reviews %}
+    <div class="ratings-container">
+      <span class="review-label"
+        ><i class="fas fa-user"></i><b> {{ review.username }}</b></span
+      >
+      <span class="rating-label"
+        >User Rating: {% if review.score == 1 %}
+        <i class="fas fa-star gold"></i>
+        {% elif review.score == 2 %}
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        {% elif review.score == 3 %}
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        {% elif review.score == 4 %}
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        {% else %}
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        <i class="fas fa-star gold"></i>
+        {% endif %}
+      </span>
+      <hr />
+      <div class="review">
+        {{ review.review }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <form
+    class="align-center"
+    action="{{ url_for('book', isbn=book.isbn) }}"
+    id="review-input"
+    method="POST"
+  >
+    <div><label>Add a review</label></div>
+    <textarea name="review-input" cols="40" rows="3"></textarea>
+    <div style="margin:5px;">
+      <div>
+        Rating:
+      </div>
+      <input type="radio" name="ratings" id="one" value="1" /> 1
+      <input type="radio" name="ratings" id="two" value="2" /> 2
+      <input
+        type="radio"
+        name="ratings"
+        id="three"
+        value="3"
+        checked="checked"
+      />
+      3 <input type="radio" name="ratings" id="four" value="4" /> 4
+      <input type="radio" name="ratings" id="five" value="5" /> 5
+    </div>
+    <p>
+      <button class="buttons btn-sm">Submit Review</button>
+    </p>
+  </form>
+  {% else %}
+  <p class="align-center">No book by that ISBN exists in our records.</p>
+  {% endif %} {% endblock %}
+</div>
