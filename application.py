@@ -247,8 +247,6 @@ def book(isbn):
         return render_template(
             "book.html",
             book=book,
-            res_avg=res_avg,
-            res_count=(format(res_count, ",d")),
             reviews=reviews,
         )
 
