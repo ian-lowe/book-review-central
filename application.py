@@ -231,18 +231,18 @@ def book(isbn):
         ).fetchall()
 
         # get Goodreads API data
-        res = requests.get(
-            "https://www.goodreads.com/book/review_counts.json",
-            params={"key": "GJZSpTvdcwByldSQzwRBfg", "isbns": isbn},
-        )
+        #res = requests.get(
+        #    "https://www.goodreads.com/book/review_counts.json",
+        #    params={"key": "GJZSpTvdcwByldSQzwRBfg", "isbns": isbn},
+        #)
 
         # check if book is available on Goodreads
-        if res.status_code != 200:
-            return render_template("book.html", book=book)
+        #if res.status_code != 200:
+        #    return render_template("book.html", book=book)
 
-        res_json = res.json()
-        res_avg = res_json["books"][0]["average_rating"]
-        res_count = res_json["books"][0]["ratings_count"]
+        #res_json = res.json()
+        #res_avg = res_json["books"][0]["average_rating"]
+        #res_count = res_json["books"][0]["ratings_count"]
 
         return render_template(
             "book.html",
